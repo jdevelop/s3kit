@@ -17,7 +17,7 @@ var catCmd = &cobra.Command{
 	Short: "cat S3 file(s)",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.New()
+		sess := session.Must(session.NewSession())
 		svc := s3.New(sess)
 		for _, url := range args {
 			bucket, prefix, err := fromS3(url)

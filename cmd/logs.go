@@ -26,19 +26,21 @@ var logsCmd = &cobra.Command{
 	Short: "print S3 Access logs as JSON",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.New()
+		sess := session.Must(session.NewSession())
 		svc := s3.New(sess)
 		batchChan := make(chan batch)
 		mChan := make(chan model.S3AccessLogSimple, 100)
 		var wg, printer sync.WaitGroup
 		wg.Add(globalOpts.workers)
 		p := parser.NewSimpleParser()
+		printer.Add(1)
 		go func() {
-			printer.Add(1)
 			defer printer.Done()
 			jsonner := json.NewEncoder(os.Stdout)
 			for v := range mChan {
-				jsonner.Encode(v)
+				if err := jsonner.Encode(v); err != nil {
+					log.Fatalf("can't encode object '%v' => %v", v, err)
+				}
 			}
 		}()
 		for i := 0; i < globalOpts.workers; i++ {
@@ -54,12 +56,14 @@ var logsCmd = &cobra.Command{
 							log.Printf("Error reading s3://%s/%s : %+v", batch.bucket, *o.Key, err)
 							continue
 						}
-						p.ParseSimple(res.Body, func(m *model.S3AccessLogSimple) bool {
+						if err := p.ParseSimple(res.Body, func(m *model.S3AccessLogSimple) bool {
 							if m.Time.Before(logsConfig.endDate.Time) && m.Time.After(logsConfig.startDate.Time) {
 								mChan <- *m
 							}
 							return true
-						})
+						}); err != nil {
+							log.Printf("can't process s3://%s/%s => %v", batch.bucket, *o.Key, err)
+						}
 						res.Body.Close()
 					}
 				}

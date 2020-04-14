@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"sync"
@@ -30,7 +31,7 @@ var sizeCmd = &cobra.Command{
 	Short: "calculate size of S3 location",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.New()
+		sess := session.Must(session.NewSession())
 		svc := s3.New(sess)
 
 		specsChan := make(chan pathSpec, 100)
@@ -55,7 +56,7 @@ var sizeCmd = &cobra.Command{
 				for spec := range specsChan {
 					var ss SizeSpec
 					ss.Path = fmt.Sprintf("s3://%s/%s", spec.bucket, spec.prefix)
-					svc.ListObjectsPages(&s3.ListObjectsInput{
+					if err := svc.ListObjectsPages(&s3.ListObjectsInput{
 						Bucket: &spec.bucket,
 						Prefix: &spec.prefix,
 					}, func(res *s3.ListObjectsOutput, last bool) bool {
@@ -64,7 +65,9 @@ var sizeCmd = &cobra.Command{
 						}
 						ss.Count += uint64(len(res.Contents))
 						return true
-					})
+					}); err != nil {
+						log.Fatalf("can't list objects at s3://%s/%s => %v", spec.bucket, spec.prefix, err)
+					}
 					sizesChan <- ss
 				}
 			}()
@@ -76,7 +79,7 @@ var sizeCmd = &cobra.Command{
 				return err
 			}
 			if sizeOpts.group {
-				svc.ListObjectsPages(&s3.ListObjectsInput{
+				if err := svc.ListObjectsPages(&s3.ListObjectsInput{
 					Delimiter: aws.String("/"),
 					Bucket:    &bucket,
 					Prefix:    &prefix,
@@ -88,7 +91,9 @@ var sizeCmd = &cobra.Command{
 						}
 					}
 					return true
-				})
+				}); err != nil {
+					log.Fatalf("can't list objects at s3://%s/%s => %v", bucket, prefix, err)
+				}
 			} else {
 				specsChan <- pathSpec{
 					bucket: bucket,
