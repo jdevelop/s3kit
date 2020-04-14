@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"runtime"
 	"sync"
 	"time"
 
@@ -17,6 +16,11 @@ import (
 
 var objectsPerPage int64 = 100
 
+type batch struct {
+	bucket  string
+	objects []*s3.Object
+}
+
 var logsCmd = &cobra.Command{
 	Use:   "logs",
 	Short: "print S3 Access logs as JSON",
@@ -24,14 +28,10 @@ var logsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sess := session.New()
 		svc := s3.New(sess)
-		type batch struct {
-			bucket  string
-			objects []*s3.Object
-		}
 		batchChan := make(chan batch)
 		mChan := make(chan model.S3AccessLogSimple, 100)
 		var wg, printer sync.WaitGroup
-		wg.Add(logsConfig.workers)
+		wg.Add(globalOpts.workers)
 		p := parser.NewSimpleParser()
 		go func() {
 			printer.Add(1)
@@ -41,7 +41,7 @@ var logsCmd = &cobra.Command{
 				jsonner.Encode(v)
 			}
 		}()
-		for i := 0; i < logsConfig.workers; i++ {
+		for i := 0; i < globalOpts.workers; i++ {
 			go func(svc *s3.S3) {
 				defer wg.Done()
 				for batch := range batchChan {
@@ -95,10 +95,8 @@ var logsCmd = &cobra.Command{
 var logsConfig = struct {
 	startDate flagTime
 	endDate   flagTime
-	workers   int
 }{
 	endDate: flagTime{time.Now().AddDate(0, 0, 1).Truncate(time.Hour * 24)},
-	workers: runtime.NumCPU(),
 }
 
 type flagTime struct {
@@ -126,6 +124,5 @@ func init() {
 	pf := logsCmd.PersistentFlags()
 	pf.VarP(&logsConfig.startDate, "start", "s", "start date ( YYYY-MM-DD )")
 	pf.VarP(&logsConfig.endDate, "end", "e", "end date ( YYYY-MM-DD )")
-	pf.IntVarP(&logsConfig.workers, "workers", "w", runtime.NumCPU(), "number of workers")
 	rootCmd.AddCommand(logsCmd)
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -28,4 +29,15 @@ func fromS3(link string) (string, string, error) {
 		return "", "", fmt.Errorf("no host defined for %s", link)
 	}
 	return u.Host, u.Path[1:], nil
+}
+
+var globalOpts = struct {
+	workers int
+}{
+	workers: runtime.NumCPU(),
+}
+
+func init() {
+	pf := rootCmd.PersistentFlags()
+	pf.IntVarP(&globalOpts.workers, "workers", "w", runtime.NumCPU(), "number of concurrent threads")
 }
