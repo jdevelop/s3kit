@@ -5,7 +5,7 @@ Could be quite useful for a fellow data engineer.
 
 ## Build
 
-go install
+`go install`
 
 ## Usage
 
