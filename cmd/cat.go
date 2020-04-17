@@ -12,9 +12,10 @@ import (
 )
 
 var catCmd = &cobra.Command{
-	Use:   "cat",
-	Short: "cat S3 file(s)",
-	Args:  cobra.MinimumNArgs(1),
+	Use:          "cat s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "cat S3 file(s)",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		svc := getS3()
 		for _, url := range args {

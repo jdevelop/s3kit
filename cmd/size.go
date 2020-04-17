@@ -25,9 +25,10 @@ type SizeSpec struct {
 }
 
 var sizeCmd = &cobra.Command{
-	Use:   "size",
-	Short: "calculate size of S3 location",
-	Args:  cobra.MinimumNArgs(1),
+	Use:          "size  s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "calculate size of S3 location",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		svc := getS3()
 

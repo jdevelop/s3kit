@@ -15,8 +15,9 @@ import (
 var log *zap.SugaredLogger
 
 var rootCmd = &cobra.Command{
-	Use:   "s3kit",
-	Short: "AWS S3 command line toolkit",
+	Use:          "s3kit",
+	Short:        "AWS S3 command line toolkit",
+	SilenceUsage: true,
 	PersistentPreRunE: func(*cobra.Command, []string) error {
 		cfg := zap.NewDevelopmentConfig()
 		cfg.EncoderConfig.EncodeTime = func(time.Time, zapcore.PrimitiveArrayEncoder) {}
