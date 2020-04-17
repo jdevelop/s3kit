@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"sync"
 	"time"
@@ -26,8 +25,7 @@ var logsCmd = &cobra.Command{
 	Short: "print S3 Access logs as JSON",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.Must(session.NewSession())
-		svc := s3.New(sess)
+		svc := s3.New(session.Must(session.NewSession()))
 		batchChan := make(chan batch)
 		mChan := make(chan model.S3AccessLogSimple, 100)
 		var wg, printer sync.WaitGroup
@@ -53,7 +51,7 @@ var logsCmd = &cobra.Command{
 							Key:    o.Key,
 						})
 						if err != nil {
-							log.Printf("Error reading s3://%s/%s : %+v", batch.bucket, *o.Key, err)
+							log.Errorf("Error reading s3://%s/%s : %+v", batch.bucket, *o.Key, err)
 							continue
 						}
 						if err := p.ParseSimple(res.Body, func(m *model.S3AccessLogSimple) bool {
@@ -62,7 +60,7 @@ var logsCmd = &cobra.Command{
 							}
 							return true
 						}); err != nil {
-							log.Printf("can't process s3://%s/%s => %v", batch.bucket, *o.Key, err)
+							log.Errorf("can't process s3://%s/%s => %v", batch.bucket, *o.Key, err)
 						}
 						res.Body.Close()
 					}
