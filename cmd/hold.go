@@ -4,7 +4,6 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
@@ -19,7 +18,7 @@ var holdOptsError = errors.New("Must specify either --" + allFlagName + " or --"
 
 var holdCmd = &cobra.Command{
 	Use:     "hold",
-	Short:   "Add/Remove legal lock for given object(s)",
+	Short:   "Add ( hold ) / Remove ( unhold ) legal lock for given object(s)",
 	Aliases: []string{"unhold"},
 	Args:    cobra.MinimumNArgs(1),
 	PreRunE: func(*cobra.Command, []string) error {
@@ -29,7 +28,7 @@ var holdCmd = &cobra.Command{
 		return holdOptsError
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		svc := s3.New(session.Must(session.NewSession()))
+		svc := getS3()
 
 		type Batch struct {
 			bucket  string

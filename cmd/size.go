@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/olekukonko/tablewriter"
@@ -30,8 +29,7 @@ var sizeCmd = &cobra.Command{
 	Short: "calculate size of S3 location",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.Must(session.NewSession())
-		svc := s3.New(sess)
+		svc := getS3()
 
 		specsChan := make(chan pathSpec, 100)
 		sizesChan := make(chan SizeSpec, 100)

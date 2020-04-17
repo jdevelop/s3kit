@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	l "log"
 	"net/url"
 	"runtime"
 	"time"
@@ -24,8 +25,10 @@ var rootCmd = &cobra.Command{
 		case globalOpts.debug:
 			cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 		case globalOpts.quiet:
+			cfg.DisableStacktrace = true
 			cfg.Level = zap.NewAtomicLevelAt(zap.WarnLevel)
 		default:
+			cfg.DisableStacktrace = true
 			cfg.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
 		}
 		l, err := cfg.Build()
@@ -39,7 +42,11 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
+		if log != nil {
+			log.Fatal(err)
+		} else {
+			l.Fatal(err)
+		}
 	}
 }
 
