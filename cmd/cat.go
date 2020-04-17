@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
@@ -17,8 +16,7 @@ var catCmd = &cobra.Command{
 	Short: "cat S3 file(s)",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sess := session.Must(session.NewSession())
-		svc := s3.New(sess)
+		svc := getS3()
 		for _, url := range args {
 			bucket, prefix, err := fromS3(url)
 			if err != nil {

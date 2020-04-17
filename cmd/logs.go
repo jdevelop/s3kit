@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/jdevelop/s3kit/model"
 	"github.com/jdevelop/s3kit/parser"
@@ -25,7 +24,7 @@ var logsCmd = &cobra.Command{
 	Short: "print S3 Access logs as JSON",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		svc := s3.New(session.Must(session.NewSession()))
+		svc := getS3()
 		batchChan := make(chan batch)
 		mChan := make(chan model.S3AccessLogSimple, 100)
 		var wg, printer sync.WaitGroup
