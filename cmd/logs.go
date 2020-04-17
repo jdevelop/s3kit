@@ -20,9 +20,10 @@ type batch struct {
 }
 
 var logsCmd = &cobra.Command{
-	Use:   "logs",
-	Short: "print S3 Access logs as JSON",
-	Args:  cobra.MinimumNArgs(1),
+	Use:          "logs s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "print S3 Access logs as JSON",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		svc := getS3()
 		batchChan := make(chan batch)

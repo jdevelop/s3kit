@@ -17,10 +17,11 @@ const (
 var holdOptsError = errors.New("Must specify either --" + allFlagName + " or --" + latestFlagName + " or --" + versionFlagName + " <version>")
 
 var holdCmd = &cobra.Command{
-	Use:     "hold",
-	Short:   "Add ( hold ) / Remove ( unhold ) legal lock for given object(s)",
-	Aliases: []string{"unhold"},
-	Args:    cobra.MinimumNArgs(1),
+	Use:          "hold s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "Add ( hold ) / Remove ( unhold ) legal lock for given object(s)",
+	Aliases:      []string{"unhold"},
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
 	PreRunE: func(*cobra.Command, []string) error {
 		if holdConfig.all || holdConfig.latest || holdConfig.version != "" {
 			return nil
