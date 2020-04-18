@@ -16,13 +16,18 @@ Usage:
   s3kit [command]
 
 Available Commands:
-  cat         cat S3 file(s)
+  cat         Print content of S3 file(s) to stdout
+  compliance  Add compliance lock
+  govern      Add/remove governance lock
   help        Help about any command
-  logs        print S3 Access logs as JSON
-  size        calculate size of S3 location
+  hold        Add/remove legal hold
+  logs        Print S3 Access logs as JSON
+  size        Calculate size of S3 location
 
 Flags:
+      --debug         print debug messages
   -h, --help          help for s3kit
+      --quiet         print warnings and errors
   -w, --workers int   number of concurrent threads (default 12)
 
 Use "s3kit [command] --help" for more information about a command.
@@ -34,12 +39,45 @@ Often you want to view content of a file on S3, or perhaps *all* of them in a ce
 If we're considering data engineering - often these files are represented as compressed CSV files.
 There's no easy way to view the file, so basically the `cat` command can identify the file ( by extension ) and uncompress it to `stdout`.
 
+```
+Print content of S3 file(s) to stdout
+
+Usage:
+  s3kit cat s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+  -h, --help   help for cat
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+```
+
+#### Example
 `s3kit cat s3://bucket/path` will print out content of all files under path prefix `s3://bucket/path`
+
+
 
 ### s3kit logs
 
 Logs command will take the folder/file that contains the access logs for a [static website](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html) hosted on an S3 bucket.
-If logs are configured to be sent to `s3://logs-bucket/accesslog/` - then printing it out is as simple as
+
+```
+Print S3 Access logs as JSON
+
+Usage:
+  s3kit logs s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+  -e, --end Date     end date ( YYYY-MM-DD ) (default 2020-04-18 20:00:00 -0400 EDT)
+  -h, --help         help for logs
+  -s, --start Date   start date ( YYYY-MM-DD ) (default 0001-01-01 00:00:00 +0000 UTC)
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+
+```
+
+#### Example
 ```
 s3kit logs s3://logs-bucket/accesslog/
 ```
@@ -69,7 +107,25 @@ logs s3://logs-bucket/accesslog/ | grep "WEBSITE.GET.OBJECT" | jq ".remote_ip" |
 
 ### s3kit size
 
-Getting size of a bucket / path prefix can be achieved with `aws s3 ls --summarize`, however it doesn't have the functionality to collect size of the top-level folders under S3 prefix, which might be useful:
+Getting size of a bucket / path prefix can be achieved with `aws s3 ls --summarize`, however it doesn't have the functionality to collect size of the top-level folders under S3 prefix, which might be useful.
+
+```
+Calculate size of S3 location
+
+Usage:
+  s3kit size  s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+  -g, --group   group sizes by top-level folders
+  -h, --help    help for size
+      --json    output as JSON array
+      --raw     raw numbers, no human-formatted size
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+```
+
+#### Example
 
 ```
 s3kit size s3://dataeng-data/ -g
