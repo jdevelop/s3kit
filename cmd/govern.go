@@ -53,18 +53,14 @@ func governOp(svc *s3.S3, opCode string) opFunc {
 	case "ON":
 		return func(bucket, key, version string) error {
 			log.Infof("governance %s: s3://%s/%s@%s", opCode, bucket, key, version)
-			var expireAt *time.Time
-			if govConf.duration != 0 {
-				d := time.Now().UTC().Add(govConf.duration)
-				expireAt = &d
-			}
+			expireAt := time.Now().UTC().Add(govConf.duration)
 			_, err := svc.PutObjectRetention(
 				&s3.PutObjectRetentionInput{
 					Bucket: &bucket,
 					Key:    &key,
 					Retention: &s3.ObjectLockRetention{
 						Mode:            &govMode,
-						RetainUntilDate: expireAt,
+						RetainUntilDate: &expireAt,
 					},
 					VersionId: &version,
 				},
