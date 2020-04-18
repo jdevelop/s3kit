@@ -17,10 +17,8 @@ Usage:
 
 Available Commands:
   cat         Print content of S3 file(s) to stdout
-  compliance  Add compliance lock
-  govern      Add/remove governance lock
   help        Help about any command
-  hold        Add/remove legal hold
+  lock        Manage object locks
   logs        Print S3 Access logs as JSON
   size        Calculate size of S3 location
 
@@ -161,14 +159,14 @@ It is also possible to get JSON output:
 ]
 ```
 
-## s3kit compliance
+## s3kit lock compliance
 Adds the [compliance lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to a given object identified by a prefix and applicable to all versions of the object(s), latest version of the object(s) or specific version of the object(s).
 
 ```
 Add compliance lock
 
 Usage:
-  s3kit compliance s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+  s3kit lock compliance s3://bucket/key1 s3://bucket/prefix/ ... [flags]
 
 Flags:
       --all               Apply to all versions of object(s)
@@ -184,49 +182,60 @@ Global Flags:
 This operation will explicitly ask for confirmation prior to applying to the object version, because there's no way to revert the compliance lock:
 
 ```
-compliance s3://demolocal123/go.mod --expire 10s
+s3kit lock compliance s3://demolocal123/go.mod --expire 10s
 Locking s3://bucket/key version .oNOa6ZVNDTUcKHaaaECJUmdA9XaBTI4 expires 2020-04-18 15:31:35, proceed? (y/N):
 ```
 
 The default answer is **NO**.
 
-## s3kit hold add / rm
+## s3kit lock legal add / rm
 
 Adds or removes the [legal hold](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
 
 ```
-Add/remove legal hold for given object(s)
+Add/remove legal hold
 
 Usage:
-  s3kit hold add s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+  s3kit lock legal [command]
+
+Available Commands:
+  add         Add legal hold for given object(s)
+  rm          Remove legal hold for given object(s)
 
 Flags:
-  -h, --help   help for add
-
-Global Flags:
       --all              Apply to all versions of object(s)
+  -h, --help             help for legal
       --latest           Apply to latest version of object(s) (default true)
       --version string   Apply to a specific version
-  -w, --workers int      number of concurrent threads (default 12)
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+
+Use "s3kit lock legal [command] --help" for more information about a command.
 ```
 
-## s3kit govern add / rm
+## s3kit lock governance add / rm
 
 Adds or removes the [governance retention lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
 
 ```
-Add/remove governance lock for given object(s)
+Add/remove governance lock
 
 Usage:
-  s3kit govern add s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+  s3kit lock governance [command]
+
+Available Commands:
+  add         Add governance lock for given object(s)
+  rm          Remove governance lock for given object(s)
 
 Flags:
-      --expire duration   governance lock duration (1m, 1h etc)
-  -h, --help              help for add
-
-Global Flags:
       --all              Apply to all versions of object(s)
+  -h, --help             help for governance
       --latest           Apply to latest version of object(s) (default true)
       --version string   Apply to a specific version
-  -w, --workers int      number of concurrent threads (default 12)
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+
+Use "s3kit lock governance [command] --help" for more information about a command.
 ```
