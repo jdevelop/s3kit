@@ -13,7 +13,7 @@ import (
 
 var catCmd = &cobra.Command{
 	Use:          "cat s3://bucket/key1 s3://bucket/prefix/ ...",
-	Short:        "cat S3 file(s)",
+	Short:        "Print content of S3 file(s) to stdout",
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
