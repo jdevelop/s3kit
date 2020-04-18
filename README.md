@@ -160,3 +160,73 @@ It is also possible to get JSON output:
   }
 ]
 ```
+
+## s3kit compliance
+Adds the [compliance lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to a given object identified by a prefix and applicable to all versions of the object(s), latest version of the object(s) or specific version of the object(s).
+
+```
+Add compliance lock
+
+Usage:
+  s3kit compliance s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+      --all               Apply to all versions of object(s)
+      --expire duration   compliance lock duration (1m, 1h etc)
+  -h, --help              help for compliance
+      --latest            Apply to latest version of object(s) (default true)
+      --version string    Apply to a specific version
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+```
+
+This operation will explicitly ask for confirmation prior to applying to the object version, because there's no way to revert the compliance lock:
+
+```
+compliance s3://demolocal123/go.mod --expire 10s
+Locking s3://bucket/key version .oNOa6ZVNDTUcKHaaaECJUmdA9XaBTI4 expires 2020-04-18 15:31:35, proceed? (y/N):
+```
+
+The default answer is **NO**.
+
+## s3kit hold add / rm
+
+Adds or removes the [legal hold](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
+
+```
+Add/remove legal hold for given object(s)
+
+Usage:
+  s3kit hold add s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+  -h, --help   help for add
+
+Global Flags:
+      --all              Apply to all versions of object(s)
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+  -w, --workers int      number of concurrent threads (default 12)
+```
+
+## s3kit govern add / rm
+
+Adds or removes the [governance retention lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
+
+```
+Add/remove governance lock for given object(s)
+
+Usage:
+  s3kit govern add s3://bucket/key1 s3://bucket/prefix/ ... [flags]
+
+Flags:
+      --expire duration   governance lock duration (1m, 1h etc)
+  -h, --help              help for add
+
+Global Flags:
+      --all              Apply to all versions of object(s)
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+  -w, --workers int      number of concurrent threads (default 12)
+```
