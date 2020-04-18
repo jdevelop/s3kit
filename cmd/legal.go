@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var holdCmd = &cobra.Command{
-	Use:          "hold",
+var legalCmd = &cobra.Command{
+	Use:          "legal",
 	Short:        "Add/remove legal hold",
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
@@ -33,10 +33,10 @@ var legalRm = &cobra.Command{
 }
 
 func init() {
-	f := holdCmd.PersistentFlags()
+	f := legalCmd.PersistentFlags()
 	initConfig(f)
-	rootCmd.AddCommand(holdCmd)
-	holdCmd.AddCommand(legalAdd, legalRm)
+	lockRoot.AddCommand(legalCmd)
+	legalCmd.AddCommand(legalAdd, legalRm)
 }
 
 func holdOp(svc *s3.S3, opCode string) opFunc {

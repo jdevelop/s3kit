@@ -8,7 +8,7 @@ import (
 )
 
 var governCmd = &cobra.Command{
-	Use:          "govern",
+	Use:          "governance",
 	Short:        "Add/remove governance lock",
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
@@ -39,8 +39,8 @@ func init() {
 	initConfig(f)
 	governAdd.Flags().DurationVar(&govConf.duration, "expire", 0, "governance lock duration (1m, 1h etc)")
 	governAdd.MarkFlagRequired("expire")
-	rootCmd.AddCommand(governCmd)
 	governCmd.AddCommand(governAdd, governRm)
+	lockRoot.AddCommand(governCmd)
 }
 
 var (

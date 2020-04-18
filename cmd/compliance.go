@@ -13,7 +13,7 @@ import (
 
 var complCmd = &cobra.Command{
 	Use:          "compliance s3://bucket/key1 s3://bucket/prefix/ ...",
-	Short:        "Add compkiance lock",
+	Short:        "Add compliance lock",
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
 	RunE: func(_ *cobra.Command, urls []string) error {
@@ -27,7 +27,7 @@ func init() {
 	initConfig(f)
 	complCmd.Flags().DurationVar(&complianceConf.duration, "expire", 0, "compliance lock duration (1m, 1h etc)")
 	complCmd.MarkFlagRequired("expire")
-	rootCmd.AddCommand(complCmd)
+	lockRoot.AddCommand(complCmd)
 }
 
 var (
