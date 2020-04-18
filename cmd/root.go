@@ -20,8 +20,8 @@ var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 	PersistentPreRunE: func(*cobra.Command, []string) error {
 		cfg := zap.NewDevelopmentConfig()
-		cfg.EncoderConfig.EncodeTime = func(time.Time, zapcore.PrimitiveArrayEncoder) {}
-		cfg.EncoderConfig.EncodeCaller = func(zapcore.EntryCaller, zapcore.PrimitiveArrayEncoder) {}
+		cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoder(func(time.Time, zapcore.PrimitiveArrayEncoder) {})
+		cfg.EncoderConfig.EncodeCaller = zapcore.CallerEncoder(func(zapcore.EntryCaller, zapcore.PrimitiveArrayEncoder) {})
 		switch {
 		case globalOpts.debug:
 			cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)

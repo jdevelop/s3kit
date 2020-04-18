@@ -1,44 +1,57 @@
 package cmd
 
 import (
-	"errors"
-
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
 
-const (
-	allFlagName     = "all"
-	latestFlagName  = "latest"
-	versionFlagName = "version"
-)
-
-var holdOptsError = errors.New("Must specify either --" + allFlagName + " or --" + latestFlagName + " or --" + versionFlagName + " <version>")
-
 var holdCmd = &cobra.Command{
 	Use:          "hold",
+	Short:        "Add/remove legal hold",
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
 }
 
+var legalAdd = &cobra.Command{
+	Use:          "add s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "Add legal hold for given object(s)",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return run(args, accessFuncBuilder(holdOp(getS3(), s3.ObjectLockLegalHoldStatusOn)))
+	},
+}
+
+var legalRm = &cobra.Command{
+	Use:          "rm s3://bucket/key1 s3://bucket/prefix/ ...",
+	Short:        "Remove legal hold for given object(s)",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return run(args, accessFuncBuilder(holdOp(getS3(), s3.ObjectLockLegalHoldStatusOff)))
+	},
+}
+
 func init() {
 	f := holdCmd.PersistentFlags()
-	f.BoolVar(&holdConfig.latest, latestFlagName, true, "Apply to latest version of object(s)")
-	f.BoolVar(&holdConfig.all, allFlagName, false, "Apply to all versions of object(s)")
-	f.StringVar(&holdConfig.version, versionFlagName, "", "Apply to a specific version")
+	initConfig(f)
 	rootCmd.AddCommand(holdCmd)
+	holdCmd.AddCommand(legalAdd, legalRm)
 }
 
-func anyErr(err ...error) error {
-	for _, e := range err {
-		if e != nil {
-			return e
-		}
+func holdOp(svc *s3.S3, opCode string) opFunc {
+	return func(bucket, key, version string) error {
+		log.Infof("hold %s: s3://%s/%s@%s", opCode, bucket, key, version)
+		_, err := svc.PutObjectLegalHold(
+			&s3.PutObjectLegalHoldInput{
+				Bucket: &bucket,
+				Key:    &key,
+				LegalHold: &s3.ObjectLockLegalHold{
+					Status: &opCode,
+				},
+				VersionId: &version,
+			},
+		)
+		return err
 	}
-	return nil
-}
-
-var holdConfig struct {
-	version string
-	latest  bool
-	all     bool
 }
