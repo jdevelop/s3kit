@@ -159,7 +159,7 @@ It is also possible to get JSON output:
 ]
 ```
 
-## s3kit lock compliance
+### s3kit lock compliance
 Adds the [compliance lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to a given object identified by a prefix and applicable to all versions of the object(s), latest version of the object(s) or specific version of the object(s).
 
 ```
@@ -188,7 +188,7 @@ Locking s3://bucket/key version .oNOa6ZVNDTUcKHaaaECJUmdA9XaBTI4 expires 2020-04
 
 The default answer is **NO**.
 
-## s3kit lock legal add / rm
+### s3kit lock legal add / rm
 
 Adds or removes the [legal hold](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
 
@@ -214,7 +214,7 @@ Global Flags:
 Use "s3kit lock legal [command] --help" for more information about a command.
 ```
 
-## s3kit lock governance add / rm
+### s3kit lock governance add / rm
 
 Adds or removes the [governance retention lock](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) to the object(s) found by given S3 prefix(es).
 
