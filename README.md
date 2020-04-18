@@ -1,6 +1,7 @@
 ## Purpose
 
-Simplify getting some basic statistics about content of AWS S3 buckets, that are missing or not very convenient to use in AWS CLI.
+Simplify getting some basic statistics about content of AWS S3 buckets, that are missing or not very convenient to use in AWS CLI. Manage object locks/compliances. The missing parts of `aws s3`.
+
 Could be quite useful for a fellow data engineer.
 
 ## Build
