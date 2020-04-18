@@ -38,6 +38,7 @@ func init() {
 	f := governCmd.PersistentFlags()
 	initConfig(f)
 	governAdd.Flags().DurationVar(&govConf.duration, "expire", 0, "governance lock duration (1m, 1h etc)")
+	governAdd.MarkFlagRequired("expire")
 	rootCmd.AddCommand(governCmd)
 	governCmd.AddCommand(governAdd, governRm)
 }
