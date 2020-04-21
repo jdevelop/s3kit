@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/olekukonko/tablewriter"
@@ -42,6 +43,9 @@ var parquetSchema = &cobra.Command{
 				Prefix: &key,
 			}, func(res *s3.ListObjectsOutput, last bool) bool {
 				for _, obj := range res.Contents {
+					if strings.HasSuffix(*obj.Key, "_SUCCESS") || strings.HasSuffix(*obj.Key, ".crc") {
+						continue
+					}
 					if processed >= parquetConf.maxKeys {
 						return false
 					}
