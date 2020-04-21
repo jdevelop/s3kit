@@ -21,6 +21,7 @@ Available Commands:
   help        Help about any command
   lock        Manage object locks
   logs        Print S3 Access logs as JSON
+  parquet     Parquet files explorer
   size        Calculate size of S3 location
 
 Flags:
@@ -240,3 +241,21 @@ Global Flags:
 
 Use "s3kit lock governance [command] --help" for more information about a command.
 ```
+
+### s3kit parquet schema 
+```
+Print parquet files schema
+
+Usage:
+  s3kit parquet schema s3://bucket/prefix/key s3://bucket/prefix/ ... [flags]
+
+Flags:
+  -h, --help       help for schema
+      --json       JSON output
+      --keys int   max parquet files to process (default 1)
+
+Global Flags:
+  -w, --workers int   number of concurrent threads (default 12)
+```
+
+
