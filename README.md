@@ -4,9 +4,22 @@ Simplify getting some basic statistics about content of AWS S3 buckets, that are
 
 Could be quite useful for a fellow data engineer.
 
-## Build
+## Build / install
+
+### Sources
 
 `go install`
+
+### MacOS
+
+```
+brew tap jdevelop/s3kit
+brew install s3kit
+```
+
+### Binary release
+
+- [1.1.0](https://github.com/jdevelop/s3kit/releases/tag/v1.1.0)
 
 ## Usage
 
