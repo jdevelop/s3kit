@@ -10,5 +10,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.5.1
+	github.com/xitongsys/parquet-go v1.5.1
+	github.com/xitongsys/parquet-go-source v0.0.0-20200326031722-42b453e70c3b
 	go.uber.org/zap v1.10.0
 )
