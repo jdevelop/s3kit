@@ -36,6 +36,13 @@ type VersionTag struct {
 	Tag     []string `json:"tag" yaml:"tag"`
 }
 
+type VersionLocks struct {
+	Version             `json:"version" yaml:"version"`
+	LegalHold           bool       `yaml:"legal_hold" json:"legal_hold"`
+	GovernanceRetention *time.Time `yaml:"governance_retention" json:"governance_retention"`
+	ComplianceRetention *time.Time `yaml:"compliance_retention" json:"compliance_retention"`
+}
+
 type PathVersion struct {
 	Path     string    `json:"path" yaml:"path"`
 	Versions []Version `json:"versions" yaml:"versions"`
@@ -45,6 +52,11 @@ type PathVersion struct {
 type PathVersionTag struct {
 	Path     string       `json:"path" yaml:"path"`
 	Versions []VersionTag `json:"versions" yaml:"versions"`
+}
+
+type PathVersionLocks struct {
+	Path     string         `json:"path" yaml:"path"`
+	Versions []VersionLocks `json:"versions" yaml:"versions"`
 }
 
 func mapPathVersions(src map[string]*PathVersion) []*PathVersion {
@@ -59,6 +71,16 @@ func mapPathVersions(src map[string]*PathVersion) []*PathVersion {
 
 func mapPathVersionTags(src map[string]*PathVersionTag) []*PathVersionTag {
 	v := make([]*PathVersionTag, len(src))
+	i := 0
+	for _, val := range src {
+		v[i] = val
+		i++
+	}
+	return v
+}
+
+func mapPathVersionLocks(src map[string]*PathVersionLocks) []*PathVersionLocks {
+	v := make([]*PathVersionLocks, len(src))
 	i := 0
 	for _, val := range src {
 		v[i] = val
