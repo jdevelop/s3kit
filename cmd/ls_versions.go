@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"gopkg.in/yaml.v2"
 
@@ -14,46 +13,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Version struct {
-	VersionId    string    `json:"version_id" yaml:"version_id"`
-	LastModified time.Time `json:"last_modified" yaml:"last_modified"`
-	Latest       bool      `json:"latest" yaml:"latest"`
-}
-
-type PathVersion struct {
-	Path     string    `json:"path" yaml:"path"`
-	Versions []Version `json:"versions" yaml:"versions"`
-	Latest   string    `json:"latest" yaml:"latest"`
-}
-
-func mapValues(src map[string]*PathVersion) []*PathVersion {
-	v := make([]*PathVersion, len(src))
-	i := 0
-	for _, val := range src {
-		v[i] = val
-		i++
-	}
-	return v
-}
-
 var lsVersions = &cobra.Command{
 	Use:   "versions s3://bucket/folder/ s3://bucket/folder/prefix ...",
 	Short: "List object version(s)",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(_ *cobra.Command, urls []string) error {
 		svc := getS3()
-		var renderF func(string, map[string]*PathVersion) error
+		var renderF func(map[string]*PathVersion) error
 		switch {
 		case lsConfig.asJson:
-			renderF = func(bucket string, keymap map[string]*PathVersion) error {
-				return json.NewEncoder(os.Stdout).Encode(mapValues(keymap))
+			renderF = func(keymap map[string]*PathVersion) error {
+				return json.NewEncoder(os.Stdout).Encode(mapPathVersions(keymap))
 			}
 		case lsConfig.asYaml:
-			renderF = func(bucket string, keymap map[string]*PathVersion) error {
-				return yaml.NewEncoder(os.Stdout).Encode(mapValues(keymap))
+			renderF = func(keymap map[string]*PathVersion) error {
+				return yaml.NewEncoder(os.Stdout).Encode(mapPathVersions(keymap))
 			}
 		default:
-			renderF = func(bucket string, keymap map[string]*PathVersion) error {
+			renderF = func(keymap map[string]*PathVersion) error {
 				table := tablewriter.NewWriter(os.Stdout)
 				table.SetHeader([]string{"Path", "Version", "Last Modified", "Latest"})
 				table.SetColumnAlignment([]int{tablewriter.ALIGN_LEFT, tablewriter.ALIGN_LEFT, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER})
@@ -80,6 +57,8 @@ var lsVersions = &cobra.Command{
 					}
 					table.Append([]string{row.Path, verString.String(), timeString.String(), latestString.String()})
 					verString.Reset()
+					latestString.Reset()
+					timeString.Reset()
 				}
 				table.Render()
 				return nil
@@ -120,7 +99,7 @@ var lsVersions = &cobra.Command{
 			}); err != nil {
 				return err
 			}
-			renderF(bucket, keysMap)
+			renderF(keysMap)
 		}
 		return nil
 	},

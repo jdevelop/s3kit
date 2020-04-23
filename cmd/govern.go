@@ -48,39 +48,39 @@ var (
 	bypass  = true
 )
 
-func governOp(svc *s3.S3, opCode string) opFunc {
+func governOp(svc *s3.S3, opCode string) accessFuncT {
 	switch opCode {
 	case "ON":
-		return func(bucket, key, version string) error {
-			log.Infof("governance %s: s3://%s/%s@%s", opCode, bucket, key, version)
+		return func(bucket string, o *s3.ObjectVersion) error {
+			log.Infof("governance %s: s3://%s/%s@%s", opCode, bucket, *o.Key, *o.VersionId)
 			expireAt := time.Now().UTC().Add(govConf.duration)
 			_, err := svc.PutObjectRetention(
 				&s3.PutObjectRetentionInput{
 					Bucket: &bucket,
-					Key:    &key,
+					Key:    o.Key,
 					Retention: &s3.ObjectLockRetention{
 						Mode:            &govMode,
 						RetainUntilDate: &expireAt,
 					},
-					VersionId: &version,
+					VersionId: o.VersionId,
 				},
 			)
 			return err
 		}
 	case "OFF":
-		return func(bucket, key, version string) error {
-			log.Infof("governance %s: s3://%s/%s@%s", opCode, bucket, key, version)
+		return func(bucket string, o *s3.ObjectVersion) error {
+			log.Infof("governance %s: s3://%s/%s@%s", opCode, bucket, *o.Key, *o.VersionId)
 			expireAt := time.Now().UTC().Add(1 * time.Second)
 			_, err := svc.PutObjectRetention(
 				&s3.PutObjectRetentionInput{
 					Bucket: &bucket,
-					Key:    &key,
+					Key:    o.Key,
 					Retention: &s3.ObjectLockRetention{
 						Mode:            &govMode,
 						RetainUntilDate: &expireAt,
 					},
 					BypassGovernanceRetention: &bypass,
-					VersionId:                 &version,
+					VersionId:                 o.VersionId,
 				},
 			)
 			return err

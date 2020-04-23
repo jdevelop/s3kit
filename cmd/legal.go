@@ -39,17 +39,17 @@ func init() {
 	legalCmd.AddCommand(legalAdd, legalRm)
 }
 
-func holdOp(svc *s3.S3, opCode string) opFunc {
-	return func(bucket, key, version string) error {
-		log.Infof("hold %s: s3://%s/%s@%s", opCode, bucket, key, version)
+func holdOp(svc *s3.S3, opCode string) accessFuncT {
+	return func(bucket string, o *s3.ObjectVersion) error {
+		log.Infof("hold %s: s3://%s/%s@%s", opCode, bucket, *o.Key, *o.VersionId)
 		_, err := svc.PutObjectLegalHold(
 			&s3.PutObjectLegalHoldInput{
 				Bucket: &bucket,
-				Key:    &key,
+				Key:    o.Key,
 				LegalHold: &s3.ObjectLockLegalHold{
 					Status: &opCode,
 				},
-				VersionId: &version,
+				VersionId: o.VersionId,
 			},
 		)
 		return err
