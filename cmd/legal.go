@@ -34,7 +34,7 @@ var legalRm = &cobra.Command{
 
 func init() {
 	f := legalCmd.PersistentFlags()
-	initConfig(f)
+	initVersionsConfig(f)
 	lockRoot.AddCommand(legalCmd)
 	legalCmd.AddCommand(legalAdd, legalRm)
 }
