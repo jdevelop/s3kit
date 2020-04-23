@@ -13,4 +13,5 @@ require (
 	github.com/xitongsys/parquet-go v1.5.1
 	github.com/xitongsys/parquet-go-source v0.0.0-20200326031722-42b453e70c3b
 	go.uber.org/zap v1.10.0
+	gopkg.in/yaml.v2 v2.2.2
 )

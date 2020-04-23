@@ -24,7 +24,7 @@ var complCmd = &cobra.Command{
 
 func init() {
 	f := complCmd.Flags()
-	initConfig(f)
+	initVersionsConfig(f)
 	complCmd.Flags().DurationVar(&complianceConf.duration, "expire", 0, "compliance lock duration (1m, 1h etc)")
 	complCmd.MarkFlagRequired("expire")
 	lockRoot.AddCommand(complCmd)
