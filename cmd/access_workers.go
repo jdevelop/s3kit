@@ -8,25 +8,23 @@ import (
 
 type accessFuncT func(bucket string, o *s3.ObjectVersion) error
 
-type opFunc func(bucket, key, version string) error
-
-func accessFuncBuilder(op opFunc) accessFuncT {
+func accessFuncBuilder(op accessFuncT) accessFuncT {
 	switch {
 	case accessConfig.all:
 		return func(bucket string, o *s3.ObjectVersion) error {
-			return op(bucket, *o.Key, *o.VersionId)
+			return op(bucket, o)
 		}
 	case accessConfig.version != "":
 		return func(bucket string, o *s3.ObjectVersion) error {
 			if o.VersionId != nil && *o.VersionId == accessConfig.version {
-				return op(bucket, *o.Key, accessConfig.version)
+				return op(bucket, o)
 			}
 			return nil
 		}
 	default: // use latest
 		return func(bucket string, o *s3.ObjectVersion) error {
 			if o.IsLatest != nil && *o.IsLatest {
-				return op(bucket, *o.Key, *o.VersionId)
+				return op(bucket, o)
 			}
 			return nil
 		}

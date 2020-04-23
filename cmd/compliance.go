@@ -34,10 +34,10 @@ var (
 	complianceMode = s3.ObjectLockRetentionModeCompliance
 )
 
-func complOp(svc *s3.S3, rdr *bufio.Reader) opFunc {
-	return func(bucket, key, version string) error {
+func complOp(svc *s3.S3, rdr *bufio.Reader) accessFuncT {
+	return func(bucket string, o *s3.ObjectVersion) error {
 		expireAt := time.Now().UTC().Add(complianceConf.duration)
-		fmt.Printf("Locking s3://%s/%s version %s expires %s, proceed? (y/N):", bucket, key, version, expireAt.Format("2006-01-02 15:04:05"))
+		fmt.Printf("Locking s3://%s/%s version %s expires %s, proceed? (y/N):", bucket, *o.Key, *o.VersionId, expireAt.Format("2006-01-02 15:04:05"))
 		answer, _, err := rdr.ReadLine()
 		switch {
 		case err == io.EOF:
@@ -48,12 +48,12 @@ func complOp(svc *s3.S3, rdr *bufio.Reader) opFunc {
 			_, err := svc.PutObjectRetention(
 				&s3.PutObjectRetentionInput{
 					Bucket: &bucket,
-					Key:    &key,
+					Key:    o.Key,
 					Retention: &s3.ObjectLockRetention{
 						Mode:            &complianceMode,
 						RetainUntilDate: &expireAt,
 					},
-					VersionId: &version,
+					VersionId: o.VersionId,
 				},
 			)
 			return err
