@@ -271,4 +271,59 @@ Global Flags:
   -w, --workers int   number of concurrent threads (default 12)
 ```
 
+### s3kit ls locks
+```
+List various locks on S3 object(s) (legal hold, governance/compliance retention)
 
+Usage:
+  s3kit ls locks s3://bucket/folder/ s3://bucket/folder/prefix ... [flags]
+
+Flags:
+      --all              Apply to all versions of object(s)
+  -h, --help             help for locks
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+
+Global Flags:
+      --json          JSON output
+      --table         ASCII table output (default true)
+  -w, --workers int   number of concurrent threads (default 12)
+      --yaml          YAML output
+```
+
+### s3kit ls tags
+```
+List tags for object(s)
+
+Usage:
+  s3kit ls tags s3://bucket/folder/ s3://bucket/folder/prefix ... [flags]
+
+Flags:
+      --all              Apply to all versions of object(s)
+  -h, --help             help for tags
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+
+Global Flags:
+      --json          JSON output
+      --table         ASCII table output (default true)
+  -w, --workers int   number of concurrent threads (default 12)
+      --yaml          YAML output
+```
+
+### s3kit ls versions
+```
+List object version(s)
+
+Usage:
+  s3kit ls versions s3://bucket/folder/ s3://bucket/folder/prefix ... [flags]
+
+Flags:
+  -h, --help   help for versions
+
+Global Flags:
+      --json          JSON output
+      --table         ASCII table output (default true)
+  -w, --workers int   number of concurrent threads (default 12)
+      --yaml          YAML output
+```
