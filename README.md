@@ -20,6 +20,7 @@ brew install s3kit
 ### Binary release
 
 - [1.1.0](https://github.com/jdevelop/s3kit/releases/tag/v1.1.0)
+- [1.2.0](https://github.com/jdevelop/s3kit/releases/tag/v1.2.0)
 
 ## Usage
 
