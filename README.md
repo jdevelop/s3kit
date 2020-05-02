@@ -1,6 +1,17 @@
 ## Purpose
 
-Simplify getting some basic statistics about content of AWS S3 buckets, that are missing or not very convenient to use in AWS CLI. Manage object locks/compliances. The missing parts of `aws s3`.
+Simplify getting some basic statistics about content of AWS S3 buckets, that are missing or not very convenient to use in AWS CLI. Supports the following commands:
+
+|Command | Description|
+| -------- |:-----------|
+|  **cat**   | Print content of S3 file(s) to stdout|
+|  **help**    | Help about any command |
+|  **lock**    | Manage object locks |
+|  **logs**    | Print S3 access logs as JSON |
+|  **ls**      | List versions and/legal holds and locks |
+|  **parquet** | Parquet files explorer |
+|  **size**    | Calculate size of S3 location |
+|  **tag**     | Tag S3 object(s) |
 
 Could be quite useful for a fellow data engineer.
 
@@ -327,4 +338,40 @@ Global Flags:
       --table         ASCII table output (default true)
   -w, --workers int   number of concurrent threads (default 12)
       --yaml          YAML output
+```
+
+### s3kit tag add
+```
+Add tag(s) to S3 object(s)
+
+Usage:
+  s3kit tag add s3://bucket/folder/ s3://bucket/folder/prefix ... [flags]
+
+Flags:
+  -h, --help           help for add
+      --tags strings   tags as --tags 'tag1=value1,tag2=value2' or multiple --tags ... options
+
+Global Flags:
+      --all              Apply to all versions of object(s)
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+  -w, --workers int      number of concurrent threads (default 12)
+```
+
+### s3kit tag rm
+```
+Remove tag(s) from S3 object(s)
+
+Usage:
+  s3kit tag rm s3://bucket/folder/ s3://bucket/folder/prefix ... [flags]
+
+Flags:
+  -h, --help           help for rm
+      --tags strings   tags as --tags 'tag1,tag2' or multiple --tags ... options
+
+Global Flags:
+      --all              Apply to all versions of object(s)
+      --latest           Apply to latest version of object(s) (default true)
+      --version string   Apply to a specific version
+  -w, --workers int      number of concurrent threads (default 12)
 ```
