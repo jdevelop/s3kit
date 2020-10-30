@@ -51,18 +51,18 @@ var parquetSchema = &cobra.Command{
 					}
 					pf, err := ps3.NewS3FileReader(context.TODO(), bucket, *obj.Key)
 					if err != nil {
-						log.Errorf("can't create file s3://%s/%s : %+v", bucket, *obj.Key, err)
-						return false
+						log.Errorf("can't open file s3://%s/%s : %+v", bucket, *obj.Key, err)
+						return true
 					}
 					r, err := reader.NewParquetReader(pf, nil, 0)
 					if err != nil {
 						log.Errorf("can't create reader from s3://%s/%s : %+v", bucket, *obj.Key, err)
-						return false
+						return true
 					}
 					printFunc(r.Footer.Schema)
 					processed += 1
 				}
-				return false
+				return true
 			}); err != nil {
 				return err
 			}
